@@ -39,7 +39,150 @@
         padding: 0;
       }
       
-      .booking-system .primary-button {
+      .booking-system .primary-button">
+          <img class="icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/arrow_back/v11/24px.svg" alt="back"/>
+          Back
+        </button>
+      </div>
+      <header>
+        <h2>{{name}}</h2>
+        <div class="info">
+          {{#if rating}}
+            <span>{{rating}}</span>
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/star/v15/24px.svg" alt="rating" class="star-icon"/>
+          {{/if}}
+          {{#if numReviews}}
+            <span>&nbsp;({{numReviews}})</span>
+          {{/if}}
+        </div>
+        {{#if typeDisplay}}
+          <div class="info">{{typeDisplay}}</div>
+        {{/if}}
+      </header>
+      <div class="section">
+        {{#if address}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v10/24px.svg" alt="Address" class="icon"/>
+            <div class="text">
+              {{address}}
+            </div>
+          </div>
+        {{/if}}
+        {{#if website}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/public/v10/24px.svg" alt="Website" class="icon"/>
+            <div class="text">
+              <a href="{{website}}" target="_blank">{{websiteDomain}}</a>
+            </div>
+          </div>
+        {{/if}}
+        {{#if phoneNumber}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/phone/v10/24px.svg" alt="Phone number" class="icon"/>
+            <div class="text">
+              {{phoneNumber}}
+            </div>
+          </div>
+        {{/if}}
+      </div>
+      
+      <div class="section">
+        <h3>Available Appointments</h3>
+        <div class="time-slots">
+          <!-- Time slots will be inserted here dynamically -->
+        </div>
+        
+        <button id="continue-button" class="primary-button">Book Appointment</button>
+      </div>
+    </script>
+    
+    <script id="booking-form-tmpl" type="text/x-handlebars-template">
+      <div class="navbar">
+        <h2>Complete Your Booking</h2>
+      </div>
+      <div class="section">
+        <h3>Appointment Details</h3>
+        <p><strong>Business:</strong> {{businessName}}</p>
+        <p><strong>Date:</strong> {{date}}</p>
+        <p><strong>Time:</strong> {{time}}</p>
+        
+        <h3>Your Information</h3>
+        <form id="booking-form">
+          <div class="form-field">
+            <label for="customer-name">Full Name:</label>
+            <input type="text" id="customer-name" required>
+          </div>
+          
+          <div class="form-field">
+            <label for="customer-email">Email:</label>
+            <input type="email" id="customer-email" required>
+          </div>
+          
+          <div class="form-field">
+            <label for="customer-phone">Phone Number:</label>
+            <input type="tel" id="customer-phone" required>
+          </div>
+          
+          <button id="submit-booking" class="primary-button">Book Appointment</button>
+        </form>
+      </div>
+    </script>
+    
+    <script id="confirmation-tmpl" type="text/x-handlebars-template">
+      <div class="navbar">
+        <h2>Booking Confirmed!</h2>
+      </div>
+      <div class="section">
+        <div class="confirmation-icon">✓</div>
+        <h3>Your appointment has been booked</h3>
+        
+        <div class="confirmation-details">
+          <p><strong>Business:</strong> {{businessName}}</p>
+          <p><strong>Date:</strong> {{date}}</p>
+          <p><strong>Time:</strong> {{time}}</p>
+          <p><strong>Name:</strong> {{customerName}}</p>
+          <p><strong>Email:</strong> {{customerEmail}}</p>
+          <p><strong>Phone:</strong> {{customerPhone}}</p>
+        </div>
+        
+        <p>A confirmation email has been sent to {{customerEmail}}.</p>
+        <p>You will receive a reminder 24 hours before your appointment.</p>
+        
+        <button id="done-button" class="primary-button">Done</button>
+      </div>
+    </script>
+  </head>
+  <body>
+    <div class="booking-system">
+      <div class="businesses-panel panel">
+        <header class="navbar">
+          <h1>Book an Urgent Appointment</h1>
+          <div class="business-types">
+            <button class="type-button" data-type="hair_care">Hair</button>
+            <button class="type-button" data-type="dentist">Dentist</button>
+            <button class="type-button" data-type="beauty_salon">Beauty</button>
+            <button class="type-button" data-type="spa">Spa</button>
+          </div>
+        </header>
+        <div class="results">
+          <ul class="business-results-list">
+            <li class="business-result">
+              <div class="text">Select a business type to see available appointments</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="details-panel panel"></div>
+      <div class="booking-form panel"></div>
+      <div class="confirmation panel"></div>
+      <div class="map"></div>
+      <svg class="marker-pin" xmlns="http://www.w3.org/2000/svg" width="26" height="38" fill="none" style="display: none;">
+        <path d="M13 0C5.817 0 0 5.93 0 13.267c0 7.862 5.59 10.81 9.555 17.624C12.09 35.248 11.342 38 13 38c1.723 0 .975-2.817 3.445-7.043C20.085 24.503 26 21.162 26 13.267 26 5.93 20.183 0 13 0Z"/>
+      </svg>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAuE7LAG2ASyMAtYPO6qkjHvivAKj3R-3c&callback=initMap&libraries=places,geometry" async defer></script>
+  </body>
+</html> {
         background-color: #4285f4;
         color: white;
         border-radius: 4px;
@@ -1023,7 +1166,7 @@
         <path d="M13 0C5.817 0 0 5.93 0 13.267c0 7.862 5.59 10.81 9.555 17.624C12.09 35.248 11.342 38 13 38c1.723 0 .975-2.817 3.445-7.043C20.085 24.503 26 21.162 26 13.267 26 5.93 20.183 0 13 0Z"/>
       </svg>
     </div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAuE7LAG2ASyMAtYPO6qkjHvivAKj3R-3c&callback=initMap&libraries=places,geometry" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&callback=initMap&libraries=places,geometry" async defer></script>
   </body>
 </html>
             <div class="info">{{type}}</div>
