@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Appointment Booking System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/handlebars/4.7.7/handlebars.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: "Roboto", sans-serif;
+      }
+
+      .booking-system {
+        box-sizing: border-box;
+        font-family: "Roboto", sans-serif;
+        height: 100%;
+        position: relative;
+        width: 100%;
+        display: flex;
+      }
+
+      .booking-system a {
+        color: #4285f4;
+        text-decoration: none;
+      }
+
+      .booking-system button {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+        font-size: inherit;
+        padding: 0;
+      }
+      
+      .booking-system .primary-button {
+        background-color: #4285f4;
+        color: white;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-weight: 500;
+        margin-top: 12px;
+        width: 100%;
+      }
+
+      .booking-system .secondary-button {
+        background-color: #f1f3f4;
+        color: #202124;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-weight: 500;
+        margin-top: 12px;
+        width: 100%;
+      }
+
+      .booking-system .info {
+        color: #555;
+        font-size: 0.9em;
+        margin-top: 0.3em;
+      }
+
+      .booking-system .panel {
+        background: white;
+        box-sizing: border-box;
+        overflow-y: auto;
+        position: relative;
+        height: 100%;
+        width: 350px;
+        box-shadow: 0 0 10px rgb(60 64 67 / 28%);
+      }
+
+      .booking-system .map {
+        flex: 1;
+        height: 100%;
+      }
+
+      .booking-system .navbar {
+        background: white;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding: 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      }
+
+      .booking-system .navbar h1 {
+        font-size: 20px;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .booking-system .search-input {
+        position: relative;
+        margin: 12px 0;
+      }
+
+      .booking-system .search-input input {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 0.3em;
+        box-sizing: border-box;
+        font-size: 1em;
+        height: 2.2em;
+        padding: 0 2.5em 0 1em;
+        width: 100%;
+      }
+
+      .booking-system .search-input button {
+        position: absolute;
+        right: 0.8em;
+        top: 0.5em;
+      }
+
+      .booking-system .business-results-list {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .booking-system .business-result {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+        display: flex;
+        padding: 16px;
+      }
+
+      .booking-system .business-result .text {
+        flex-grow: 1;
+      }
+
+      .booking-system .business-result .name {
+        font-size: 1em;
+        font-weight: 500;
+        text-align: left;
+      }
+
+      .booking-system .star-icon {
+        filter: invert(88%) sepia(60%) saturate(2073%) hue-rotate(318deg) brightness(93%) contrast(104%);
+        height: 1.2em;
+        margin-right: -0.3em;
+        margin-top: -0.08em;
+        vertical-align: top;
+        width: 1.2em;
+      }
+
+      /* Details panel */
+      .booking-system .details-panel {
+        display: none;
+        z-index: 20;
+      }
+
+      .booking-system .details-panel .back-button {
+        color: #4285f4;
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .booking-system .details-panel .back-button .icon {
+        filter: invert(47%) sepia(71%) saturate(2372%) hue-rotate(200deg) brightness(97%) contrast(98%);
+        height: 1.2em;
+        width: 1.2em;
+        margin-right: 4px;
+      }
+
+      .booking-system .details-panel h2 {
+        font-size: 1.4em;
+        font-weight: 400;
+        margin: 0;
+      }
+
+      .booking-system .details-panel .section {
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
+        padding: 16px;
+      }
+
+      .booking-system .details-panel .contact {
+        align-items: center;
+        display: flex;
+        font-size: 0.9em;
+        margin: 0.8em 0;
+      }
+
+      .booking-system .details-panel .contact .icon {
+        width: 1.5em;
+        height: 1.5em;
+      }
+
+      .booking-system .details-panel .contact .text {
+        margin-left: 1em;
+      }
+
+      /* Time slot selection */
+      .booking-system .time-slots {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .booking-system .time-slot {
+        background-color: #f1f3f4;
+        border-radius: 4px;
+        padding: 8px;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .booking-system .time-slot.selected {
+        background-color: #d2e3fc;
+        border: 1px solid #4285f4;
+      }
+
+      /* Booking form */
+      .booking-system .booking-form {
+        display: none;
+      }
+
+      .booking-system .form-field {
+        margin-bottom: 16px;
+      }
+
+      .booking-system .form-field label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+
+      .booking-system .form-field input {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+        height: 2.2em;
+        padding: 0 1em;
+        width: 100%;
+      }
+
+      /* Confirmation */
+      .booking-system .confirmation {
+        display: none;
+        padding: 16px;
+        text-align: center;
+      }
+
+      .booking-system .confirmation-icon {
+        font-size: 48px;
+        color: #34a853;
+        margin-bottom: 16px;
+      }
+
+      @media only screen and (max-width: 768px) {
+        .booking-system {
+          flex-direction: column;
+        }
+
+        .booking-system .panel {
+          width: 100%;
+          height: 50%;
+        }
+
+        .booking-system .map {
+          height: 50%;
+        }
+      }
+    </style>
+    <script>
+      'use strict';
+
+      /** Hides a DOM element and optionally focuses on focusEl. */
+      function hideElement(el, focusEl) {
+        el.style.display = 'none';
+        if (focusEl) focusEl.focus();
+      }
+
+      /** Shows a DOM element that has been hidden and optionally focuses on focusEl. */
+      function showElement(el, focusEl) {
+        el.style.display = 'block';
+        if (focusEl) focusEl.focus();
+      }
+
+      /** Format a Place Type string by capitalizing and replacing underscores with spaces. */
+      function formatPlaceType(str) {
+        const capitalized = str.charAt(0).toUpperCase() + str.slice(1);
+        return capitalized.replace(/_/g, ' ');
+      }
+
+      /** Initializes an array of zeros with the given size. */
+      function initArray(arraySize) {
+        const array = [];
+        while (array.length < arraySize) {
+          array.push(0);
+        }
+        return array;
+      }
+
+      /** Assigns star icons to an object given its rating (out of 5). */
+      function addStarIcons(obj) {
+        if (!obj.rating) return;
+        const starsOutOfTen = Math.round(2 * obj.rating);
+        const fullStars = Math.floor(starsOutOfTen / 2);
+        const halfStars = fullStars !== starsOutOfTen / 2 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStars;
+
+        // Express stars as arrays to make iterating in Handlebars easy.
+        obj.fullStarIcons = initArray(fullStars);
+        obj.halfStarIcons = initArray(halfStars);
+        obj.emptyStarIcons = initArray(emptyStars);
+      }
+
+      /**
+       * Constructs an array of opening hours by day from a PlaceOpeningHours object,
+       * where adjacent days of week with the same hours are collapsed into one element.
+       */
+      function parseDaysHours(openingHours) {
+        const daysHours = openingHours.weekday_text.map((e) => e.split(/\:\s+/))
+                  .map((e) => ({'days': e[0].substr(0, 3), 'hours': e[1]}));
+
+        for (let i = 1; i < daysHours.length; i++) {
+          if (daysHours[i - 1].hours === daysHours[i].hours) {
+            if (daysHours[i - 1].days.indexOf('-') !== -1) {
+              daysHours[i - 1].days =
+                  daysHours[i - 1].days.replace(/\w+$/, daysHours[i].days);
+            } else {
+              daysHours[i - 1].days += ' - ' + daysHours[i].days;
+            }
+            daysHours.splice(i--, 1);
+          }
+        }
+        return daysHours;
+      }
+
+      /** Generates mock time slots for a given day */
+      function generateTimeSlots(date) {
+        const slots = [];
+        // Generate slots from 9am to 5pm with 30 min intervals
+        for (let hour = 9; hour < 17; hour++) {
+          slots.push(`${hour}:00`);
+          slots.push(`${hour}:30`);
+        }
+        return slots;
+      }
+
+      /**
+       * Defines the Appointment Booking System application.
+       */
+      function AppointmentBookingSystem(configuration) {
+        const app = this;
+        const appEl = document.querySelector('.booking-system');
+
+        app.center = configuration.mapOptions.center;
+        app.businesses = configuration.pois || [];
+        app.selectedDate = new Date();
+        app.selectedTimeSlot = null;
+        app.selectedBusiness = null;
+
+        // Initialize core functionalities -------------------------------------
+        
+        initializeMap();
+        initializePlaceDetails();
+        initializeSidePanel();
+        initializeBookingFlow();
+
+        // Initialize additional capabilities ----------------------------------
+
+        initializeSearchInput();
+
+        // Initializer function definitions ------------------------------------
+
+        /** Initializes the interactive map and adds place markers. */
+        function initializeMap() {
+          const mapOptions = configuration.mapOptions;
+          app.mapBounds = new google.maps.Circle(
+            {center: app.center, radius: configuration.mapRadius}).getBounds();
+          mapOptions.restriction = {latLngBounds: app.mapBounds};
+          mapOptions.mapTypeControlOptions = {position: google.maps.ControlPosition.TOP_RIGHT};
+          app.map = new google.maps.Map(appEl.querySelector('.map'), mapOptions);
+          app.map.fitBounds(app.mapBounds, /* padding= */ 0);
+          
+          const markerPath = appEl.querySelector('.marker-pin path').getAttribute('d');
+          const drawMarker = function(title, position, fillColor, strokeColor, labelText) {
+            return new google.maps.Marker({
+              title: title,
+              position: position,
+              map: app.map,
+              icon: {
+                path: markerPath,
+                fillColor: fillColor,
+                fillOpacity: 1,
+                strokeColor: strokeColor,
+                anchor: new google.maps.Point(13, 35),
+                labelOrigin: new google.maps.Point(13, 13),
+              },
+              label: {
+                text: labelText,
+                color: 'white',
+                fontSize: '16px',
+                fontFamily: 'Material Icons',
+              },
+            });
+          };
+
+          // Add marker at the center location (if specified).
+          if (configuration.centerMarker && configuration.centerMarker.icon) {
+            drawMarker('My Location', app.center,
+                       '#1A73E8', '#185ABC', configuration.centerMarker.icon);
+          }
+
+          // Add marker for the specified business object.
+          app.addBusinessMarker = function(business) {
+            business.marker = drawMarker(business.name, business.coords, '#EA4335', '#C5221F', business.icon);
+            business.marker.addListener('click', () => void app.selectBusinessById(business.placeId));
+          };
+
+          // Fit map to bounds that contain all markers of the specified business objects.
+          app.updateBounds = function(businesses) {
+            const bounds = new google.maps.LatLngBounds();
+            bounds.extend(app.center);
+            for (let business of businesses) {
+              bounds.extend(business.marker.getPosition());
+            }
+            app.map.fitBounds(bounds, /* padding= */ 100);
+          };
+
+          // Marker used to highlight a business from Autocomplete search.
+          app.selectedBusinessMarker = new google.maps.Marker({title: 'Selected Business'});
+        }
+
+        /** Initializes Place Details service for the app. */
+        function initializePlaceDetails() {
+          const detailsService = new google.maps.places.PlacesService(app.map);
+          const placeIdsToDetails = new Map();  // Create object to hold Place results.
+
+          for (let business of app.businesses) {
+            placeIdsToDetails.set(business.placeId, business);
+            business.fetchedFields = new Set(['place_id']);
+          }
+
+          app.fetchPlaceDetails = function(placeId, fields, callback) {
+            if (!placeId || !fields) return;
+
+            // Check for field existence in business object.
+            let business = placeIdsToDetails.get(placeId);
+            if (!business) {
+              business = {placeId: placeId, fetchedFields: new Set(['place_id'])};
+              placeIdsToDetails.set(placeId, business);
+            }
+            const missingFields = fields.filter((field) => !business.fetchedFields.has(field));
+            if (missingFields.length === 0) {
+              callback(business);
+              return;
+            }
+
+            const request = {placeId: placeId, fields: missingFields};
+            let retryCount = 0;
+            const processResult = function(result, status) {
+              if (status !== google.maps.places.PlacesServiceStatus.OK) {
+                if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT &&
+                    retryCount < 5) {
+                  const delay = (Math.pow(2, retryCount) + Math.random()) * 500;
+                  setTimeout(() => void detailsService.getDetails(request, processResult), delay);
+                  retryCount++;
+                }
+                return;
+              }
+
+              // Basic details.
+              if (result.name) business.name = result.name;
+              if (result.geometry) business.coords = result.geometry.location;
+              if (result.formatted_address) business.address = result.formatted_address;
+              if (result.types) {
+                const relevantTypes = [
+                  'beauty_salon', 'hair_care', 'spa', 'dentist', 'doctor', 'health', 
+                  'physiotherapist', 'nail_salon'
+                ];
+                business.type = 'Business';
+                business.icon = 'store';
+                
+                for (let type of result.types) {
+                  if (relevantTypes.includes(type)) {
+                    business.type = formatPlaceType(type);
+                    business.icon = type === 'beauty_salon' || type === 'hair_care' || type === 'nail_salon' 
+                      ? 'content_cut' 
+                      : type === 'spa' 
+                        ? 'spa' 
+                        : type === 'dentist' 
+                          ? 'medical_services' 
+                          : 'local_hospital';
+                    break;
+                  }
+                }
+              }
+
+              // Contact details.
+              if (result.website) {
+                business.website = result.website;
+                const url = new URL(business.website);
+                business.websiteDomain = url.hostname;
+              }
+              if (result.formatted_phone_number) business.phoneNumber = result.formatted_phone_number;
+              if (result.opening_hours) business.openingHours = parseDaysHours(result.opening_hours);
+
+              // Rating details.
+              if (result.rating) {
+                business.rating = result.rating;
+                addStarIcons(business);
+              }
+              if (result.user_ratings_total) business.numReviews = result.user_ratings_total;
+
+              for (let field of missingFields) {
+                business.fetchedFields.add(field);
+              }
+              callback(business);
+            };
+
+            // Use result from Place Autocomplete if available.
+            if (app.placeIdsToAutocompleteResults) {
+              const autoCompleteResult = app.placeIdsToAutocompleteResults.get(placeId);
+              if (autoCompleteResult) {
+                processResult(autoCompleteResult, google.maps.places.PlacesServiceStatus.OK);
+                return;
+              }
+            }
+            detailsService.getDetails(request, processResult);
+          };
+        }
+
+        /** Initializes the side panel that holds business results. */
+        function initializeSidePanel() {
+          const panelEl = appEl.querySelector('.businesses-panel');
+          const detailsPanelEl = appEl.querySelector('.details-panel');
+          const businessResultsEl = appEl.querySelector('.business-results-list');
+          const resultsTemplate = Handlebars.compile(
+              document.getElementById('business-results-tmpl').innerHTML);
+          const detailsTemplate = Handlebars.compile(
+              document.getElementById('business-details-tmpl').innerHTML);
+
+          // Select a business by id and show details.
+          let selectedBusinessId;
+          app.selectBusinessById = function(placeId, panToMarker) {
+            if (selectedBusinessId === placeId) return;
+            selectedBusinessId = placeId;
+            const prevFocusEl = document.activeElement;
+
+            const showDetailsPanel = function(business) {
+              app.selectedBusiness = business;
+              detailsPanelEl.innerHTML = detailsTemplate(business);
+              
+              const backButtonEl = detailsPanelEl.querySelector('.back-button');
+              backButtonEl.addEventListener('click', () => {
+                hideElement(detailsPanelEl, prevFocusEl);
+                hideElement(appEl.querySelector('.booking-form'));
+                hideElement(appEl.querySelector('.confirmation'));
+                selectedBusinessId = undefined;
+                app.selectedBusinessMarker.setMap(null);
+              });
+              
+              // Date picker logic
+              const datePicker = detailsPanelEl.querySelector('#booking-date');
+              datePicker.valueAsDate = app.selectedDate;
+              datePicker.addEventListener('change', (e) => {
+                app.selectedDate = new Date(e.target.value);
+                updateTimeSlots();
+              });
+              
+              // Initialize time slots
+              updateTimeSlots();
+              
+              // Continue to booking form
+              const continueButton = detailsPanelEl.querySelector('#continue-button');
+              continueButton.addEventListener('click', () => {
+                if (!app.selectedTimeSlot) {
+                  alert('Please select a time slot');
+                  return;
+                }
+                showBookingForm();
+              });
+              
+              showElement(detailsPanelEl, backButtonEl);
+              detailsPanelEl.scrollTop = 0;
+            };
+            
+            const updateTimeSlots = function() {
+              const timeSlotsContainer = detailsPanelEl.querySelector('.time-slots');
+              timeSlotsContainer.innerHTML = '';
+              
+              const slots = generateTimeSlots(app.selectedDate);
+              
+              slots.forEach(slot => {
+                const slotEl = document.createElement('div');
+                slotEl.className = 'time-slot';
+                slotEl.textContent = slot;
+                slotEl.addEventListener('click', () => {
+                  // Deselect all time slots
+                  document.querySelectorAll('.time-slot').forEach(el => {
+                    el.classList.remove('selected');
+                  });
+                  
+                  // Select this time slot
+                  slotEl.classList.add('selected');
+                  app.selectedTimeSlot = slot;
+                });
+                timeSlotsContainer.appendChild(slotEl);
+              });
+            };
+
+            const processResult = function(business) {
+              if (business.marker) {
+                app.selectedBusinessMarker.setMap(null);
+              } else {
+                app.selectedBusinessMarker.setPosition(business.coords);
+                app.selectedBusinessMarker.setMap(app.map);
+              }
+              if (panToMarker) {
+                app.map.panTo(business.coords);
+              }
+              showDetailsPanel(business);
+            };
+
+            app.fetchPlaceDetails(placeId, [
+              'name', 'types', 'geometry.location', 'formatted_address',
+              'website', 'formatted_phone_number', 'opening_hours',
+              'rating', 'user_ratings_total'
+            ], processResult);
+          };
+
+          // Render the specified business objects and append them to the list.
+          const renderBusinessResults = function(businesses, startIndex) {
+            businessResultsEl.insertAdjacentHTML('beforeend', resultsTemplate({businesses: businesses}));
+            businessResultsEl.querySelectorAll('.business-result').forEach((resultEl, i) => {
+              const business = businesses[i - startIndex];
+              if (!business) return;
+              // Clicking anywhere on the item selects the business.
+              resultEl.addEventListener('click', () => {
+                app.selectBusinessById(business.placeId, /* panToMarker= */ true);
+              });
+              resultEl.querySelector('.name').addEventListener('click', (e) => {
+                app.selectBusinessById(business.placeId, /* panToMarker= */ true);
+                e.stopPropagation();
+              });
+              app.addBusinessMarker(business);
+            });
+          };
+
+          // Load initial businesses
+          let nextBusinessIndex = 0;
+          const showNextBusinesses = function(n) {
+            const nextBusinesses = app.businesses.slice(nextBusinessIndex, nextBusinessIndex + n);
+            if (nextBusinesses.length < 1) {
+              return;
+            }
+            
+            // Keep track of the number of Places calls that have not finished.
+            let count = nextBusinesses.length;
+            for (let business of nextBusinesses) {
+              const processResult = function(business) {
+                count--;
+                if (count > 0) return;
+                renderBusinessResults(nextBusinesses, nextBusinessIndex);
+                nextBusinessIndex += n;
+                app.updateBounds(app.businesses.slice(0, nextBusinessIndex));
+              };
+              app.fetchPlaceDetails(business.placeId, [
+                'name', 'types', 'geometry.location',
+                'rating', 'user_ratings_total'
+              ], processResult);
+            }
+          };
+          showNextBusinesses(10); // Load initial businesses
+        }
+        
+        /** Initializes the booking form and confirmation flow */
+        function initializeBookingFlow() {
+          const bookingFormEl = appEl.querySelector('.booking-form');
+          const confirmationEl = appEl.querySelector('.confirmation');
+          const bookingFormTemplate = Handlebars.compile(
+              document.getElementById('booking-form-tmpl').innerHTML);
+          const confirmationTemplate = Handlebars.compile(
+              document.getElementById('confirmation-tmpl').innerHTML);
+          
+          const showBookingForm = function() {
+            bookingFormEl.innerHTML = bookingFormTemplate({
+              businessName: app.selectedBusiness.name,
+              date: app.selectedDate.toLocaleDateString(),
+              time: app.selectedTimeSlot
+            });
+            
+            const submitButton = bookingFormEl.querySelector('#submit-booking');
+            submitButton.addEventListener('click', (e) => {
+              e.preventDefault();
+              
+              // Validate form
+              const name = bookingFormEl.querySelector('#customer-name').value;
+              const email = bookingFormEl.querySelector('#customer-email').value;
+              const phone = bookingFormEl.querySelector('#customer-phone').value;
+              
+              if (!name || !email || !phone) {
+                alert('Please fill in all required fields');
+                return;
+              }
+              
+              // In a real app, you would send this data to your server
+              const bookingData = {
+                businessId: app.selectedBusiness.placeId,
+                businessName: app.selectedBusiness.name,
+                date: app.selectedDate,
+                time: app.selectedTimeSlot,
+                customerName: name,
+                customerEmail: email,
+                customerPhone: phone
+              };
+              
+              console.log('Booking data:', bookingData);
+              
+              // Show confirmation
+              showConfirmation(bookingData);
+            });
+            
+            showElement(bookingFormEl);
+          };
+          
+          const showConfirmation = function(bookingData) {
+            confirmationEl.innerHTML = confirmationTemplate({
+              businessName: bookingData.businessName,
+              date: bookingData.date.toLocaleDateString(),
+              time: bookingData.time,
+              customerName: bookingData.customerName,
+              customerEmail: bookingData.customerEmail,
+              customerPhone: bookingData.customerPhone
+            });
+            
+            const doneButton = confirmationEl.querySelector('#done-button');
+            doneButton.addEventListener('click', () => {
+              // Reset app state
+              hideElement(appEl.querySelector('.details-panel'));
+              hideElement(bookingFormEl);
+              hideElement(confirmationEl);
+              app.selectedBusinessMarker.setMap(null);
+            });
+            
+            showElement(confirmationEl);
+          };
+          
+          // Make the function available to the outer scope
+          app.showBookingForm = showBookingForm;
+        }
+
+        /** Initializes Search Input for the app. */
+        function initializeSearchInput() {
+          const searchInputEl = appEl.querySelector('.business-search-input');
+          app.placeIdsToAutocompleteResults = new Map();
+
+          // Set up Autocomplete on the search input.
+          const autocomplete = new google.maps.places.Autocomplete(searchInputEl, {
+            types: ['establishment'],
+            fields: [
+              'place_id', 'name', 'types', 'geometry.location', 'formatted_address',
+              'website', 'formatted_phone_number', 'opening_hours',
+              'rating', 'user_ratings_total'
+            ],
+            bounds: app.mapBounds,
+            strictBounds: true,
+          });
+          autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            app.placeIdsToAutocompleteResults.set(place.place_id, place);
+            app.selectBusinessById(place.place_id, /* panToMarker= */ true);
+            searchInputEl.value = '';
+          });
+        }
+      }
+    </script>
+    <script>
+      const CONFIGURATION = {
+        "pois": [
+          {"placeId": "ChIJQdQyeiZu5kcRUfQHfB-OCLA"}, // Hair salon
+          {"placeId": "ChIJ442GNENu5kcRGYUrvgqHw88"}, // Nail salon
+          {"placeId": "ChIJAQAAMCxu5kcRx--_4QnbGcI"}, // Dentist
+          {"placeId": "ChIJ0dzuSNBv5kcRa6BHUVdFm0k"}, // Spa
+          {"placeId": "ChIJPUBtQTVu5kcRnPMYVq9Mthg"}, // Beauty salon
+          {"placeId": "ChIJVUrgmz5u5kcRWPSN-T8a730"}, // Wellness center
+          {"placeId": "ChIJwxT3mL5v5kcRAsTd3v0lJOY"}, // Massage
+          {"placeId": "ChIJ6SJcCP5x5kcRJt8m9_lR7_Q"}  // Medical clinic
+        ],
+        "centerMarker": {"icon":"person_pin"},
+        "mapRadius": 5000,
+        "mapOptions": {"center":{"lat":32.0853,"lng":34.7818},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":false,"zoom":14,"zoomControl":true,"maxZoom":20,"mapId":""},
+        "mapsApiKey": "YOUR_API_KEY_HERE"
+      };
+
+      function initMap() {
+        new AppointmentBookingSystem(CONFIGURATION);
+      }
+    </script>
+    <script id="business-results-tmpl" type="text/x-handlebars-template">
+      {{#each businesses}}
+        <li class="business-result">
+          <div class="navbar">
+        <button class="back-button">
+          <img class="icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/arrow_back/v11/24px.svg" alt="back"/>
+          Back
+        </button>
+      </div>
+      <header>
+        <h2>{{name}}</h2>
+        <div class="info">
+          {{#if rating}}
+            <span>{{rating}}</span>
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/star/v15/24px.svg" alt="rating" class="star-icon"/>
+          {{/if}}
+          {{#if numReviews}}
+            <span>&nbsp;({{numReviews}})</span>
+          {{/if}}
+        </div>
+        {{#if type}}
+          <div class="info">{{type}}</div>
+        {{/if}}
+      </header>
+      <div class="section">
+        {{#if address}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v10/24px.svg" alt="Address" class="icon"/>
+            <div class="text">
+              {{address}}
+            </div>
+          </div>
+        {{/if}}
+        {{#if website}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/public/v10/24px.svg" alt="Website" class="icon"/>
+            <div class="text">
+              <a href="{{website}}" target="_blank">{{websiteDomain}}</a>
+            </div>
+          </div>
+        {{/if}}
+        {{#if phoneNumber}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/phone/v10/24px.svg" alt="Phone number" class="icon"/>
+            <div class="text">
+              {{phoneNumber}}
+            </div>
+          </div>
+        {{/if}}
+      </div>
+      
+      <div class="section">
+        <h3>Book an Appointment</h3>
+        <div class="form-field">
+          <label for="booking-date">Select Date:</label>
+          <input type="date" id="booking-date" required>
+        </div>
+        
+        <h4>Available Time Slots:</h4>
+        <div class="time-slots">
+          <!-- Time slots will be inserted here dynamically -->
+        </div>
+        
+        <button id="continue-button" class="primary-button">Continue</button>
+      </div class="text">
+            <button class="name">{{name}}</button>
+            <div class="info">
+              {{#if rating}}
+                <span>{{rating}}</span>
+                <img src="https://fonts.gstatic.com/s/i/googlematerialicons/star/v15/24px.svg" alt="rating" class="star-icon"/>
+              {{/if}}
+              {{#if numReviews}}
+                <span>&nbsp;({{numReviews}})</span>
+              {{/if}}
+            </div>
+        </li>
+      {{/each}}
+    </script>
+    <script id="business-details-tmpl" type="text/x-handlebars-template">
+      <div class="navbar">
+        <button class="back-button">
+          <img class="icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/arrow_back/v11/24px.svg" alt="back"/>
+          Back
+        </button>
+      </div>
+      <header>
+        <h2>{{name}}</h2>
+        <div class="info">
+          {{#if rating}}
+            <span>{{rating}}</span>
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/star/v15/24px.svg" alt="rating" class="star-icon"/>
+          {{/if}}
+          {{#if numReviews}}
+            <span>&nbsp;({{numReviews}})</span>
+          {{/if}}
+        </div>
+        {{#if type}}
+          <div class="info">{{type}}</div>
+        {{/if}}
+      </header>
+      <div class="section">
+        {{#if address}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v10/24px.svg" alt="Address" class="icon"/>
+            <div class="text">
+              {{address}}
+            </div>
+          </div>
+        {{/if}}
+        {{#if website}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/public/v10/24px.svg" alt="Website" class="icon"/>
+            <div class="text">
+              <a href="{{website}}" target="_blank">{{websiteDomain}}</a>
+            </div>
+          </div>
+        {{/if}}
+        {{#if phoneNumber}}
+          <div class="contact">
+            <img src="https://fonts.gstatic.com/s/i/googlematerialicons/phone/v10/24px.svg" alt="Phone number" class="icon"/>
+            <div class="text">
+              {{phoneNumber}}
+            </div>
+          </div>
+        {{/if}}
+      </div>
+      
+      <div class="section">
+        <h3>Book an Appointment</h3>
+        <div class="form-field">
+          <label for="booking-date">Select Date:</label>
+          <input type="date" id="booking-date" min="{{minDate}}" required>
+        </div>
+        
+        <h4>Available Time Slots:</h4>
+        <div class="time-slots">
+          <!-- Time slots will be inserted here dynamically -->
+        </div>
+        
+        <button id="continue-button" class="primary-button">Continue</button>
+      </div>
+    </script>
+    <script id="booking-form-tmpl" type="text/x-handlebars-template">
+      <div class="navbar">
+        <h2>Complete Your Booking</h2>
+      </div>
+      <div class="section">
+        <h3>Appointment Details</h3>
+        <p><strong>Business:</strong> {{businessName}}</p>
+        <p><strong>Date:</strong> {{date}}</p>
+        <p><strong>Time:</strong> {{time}}</p>
+        
+        <h3>Your Information</h3>
+        <form id="booking-form">
+          <div class="form-field">
+            <label for="customer-name">Full Name:</label>
+            <input type="text" id="customer-name" required>
+          </div>
+          
+          <div class="form-field">
+            <label for="customer-email">Email:</label>
+            <input type="email" id="customer-email" required>
+          </div>
+          
+          <div class="form-field">
+            <label for="customer-phone">Phone Number:</label>
+            <input type="tel" id="customer-phone" required>
+          </div>
+          
+          <div class="form-field">
+            <label for="customer-notes">Special Requests (optional):</label>
+            <input type="text" id="customer-notes">
+          </div>
+          
+          <button id="submit-booking" class="primary-button">Book Appointment</button>
+        </form>
+      </div>
+    </script>
+    <script id="confirmation-tmpl" type="text/x-handlebars-template">
+      <div class="navbar">
+        <h2>Booking Confirmed!</h2>
+      </div>
+      <div class="section">
+        <div class="confirmation-icon">✓</div>
+        <h3>Your appointment has been booked</h3>
+        
+        <div class="confirmation-details">
+          <p><strong>Business:</strong> {{businessName}}</p>
+          <p><strong>Date:</strong> {{date}}</p>
+          <p><strong>Time:</strong> {{time}}</p>
+          <p><strong>Name:</strong> {{customerName}}</p>
+          <p><strong>Email:</strong> {{customerEmail}}</p>
+          <p><strong>Phone:</strong> {{customerPhone}}</p>
+        </div>
+        
+        <p>A confirmation email has been sent to {{customerEmail}}.</p>
+        <p>You will receive a reminder 24 hours before your appointment.</p>
+        
+        <button id="done-button" class="primary-button">Done</button>
+      </div>
+    </script>
+  </head>
+  <body>
+    <div class="booking-system">
+      <div class="businesses-panel panel">
+        <header class="navbar">
+          <h1>Book an Appointment</h1>
+          <div class="search-input">
+            <input class="business-search-input" placeholder="Search for a business...">
+            <button class="search-button">
+              <img src="https://fonts.gstatic.com/s/i/googlematerialicons/search/v11/24px.svg" alt="search"/>
+            </button>
+          </div>
+        </header>
+        <div class="results">
+          <ul class="business-results-list"></ul>
+        </div>
+      </div>
+      <div class="details-panel panel"></div>
+      <div class="booking-form panel"></div>
+      <div class="confirmation panel"></div>
+      <div class="map"></div>
+      <svg class="marker-pin" xmlns="http://www.w3.org/2000/svg" width="26" height="38" fill="none" style="display: none;">
+        <path d="M13 0C5.817 0 0 5.93 0 13.267c0 7.862 5.59 10.81 9.555 17.624C12.09 35.248 11.342 38 13 38c1.723 0 .975-2.817 3.445-7.043C20.085 24.503 26 21.162 26 13.267 26 5.93 20.183 0 13 0Z"/>
+      </svg>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&callback=initMap&libraries=places,geometry" async defer></script>
+  </body>
+</html>
+            <div class="info">{{type}}</div>
+          </div>
